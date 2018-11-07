@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>PC Turner</title>
+</head>
+
+<body>
+  <script>
+    let is_making_api_call = false;
+    function enableButton(bool) {
+      const button = document.getElementById('button-switch');
+      button.disabled = bool;
+    }
+    function turn_on_pc() {
+      is_making_api_call = true;
+      enableButton(false);
+      const turnon = `${window.host-name}/gpio?pin=2&set=1`;
+      const turnoff = `${window.host-name}/gpio?pin=2&set=0`;
+      const params = {
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      };
+
+      window.fetch(turnon, params)
+        .then(() => {
+          console.log('Its on');
+          window.fetch(turnoff, params).then(() => {
+            console.log('Its off');
+            is_making_api_call = false;
+            enableButton(true);
+          })
+        }).catch(() => {
+          is_making_api_call = false;
+          enableButton(true);
+        })
+    }
+  </script>
+  <button id="button-switch" onclick="turn_on_pc()">Turn On</button>
+</body>
+
+</html>
